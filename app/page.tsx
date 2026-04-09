@@ -57,9 +57,9 @@ export default function Home() {
     <div className="bg-surface text-on-surface min-h-screen font-body selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
       {/* TopAppBar */}
       <motion.header 
-        animate={{ 
+        animate={{
           backgroundColor: isScrolled ? 'rgba(252, 249, 246, 0.95)' : 'rgba(252, 249, 246, 0.5)',
-          backdropBlur: '20px',
+          backdropFilter: isScrolled ? 'blur(20px)' : 'blur(5px)',
           boxShadow: isScrolled ? '0 10px 30px -10px rgba(0,0,0,0.05)' : 'none',
           borderBottom: isScrolled ? '1px solid rgba(0,0,0,0.03)' : '1px solid transparent'
         }}
