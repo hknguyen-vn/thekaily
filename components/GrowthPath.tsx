@@ -564,6 +564,7 @@ export function GrowthPath({ onMilestoneCountChange }: { onMilestoneCountChange?
                             src={getOptimizedCloudinaryUrl(milestone.photos[0], 400)} 
                             alt="" 
                             fill
+                            sizes="(max-width: 768px) 100vw, 50vw"
                             className="object-cover blur-xl opacity-40 scale-110" 
                             referrerPolicy="no-referrer" 
                             unoptimized={!milestone.photos[0].includes('res.cloudinary.com')}
@@ -574,6 +575,7 @@ export function GrowthPath({ onMilestoneCountChange }: { onMilestoneCountChange?
                                 src={getOptimizedCloudinaryUrl(milestone.photos[0], 800)} 
                                 alt={milestone.title} 
                                 fill
+                                sizes="(max-width: 768px) 100vw, 50vw"
                                 className="object-contain hover:scale-105 transition-transform duration-700" 
                                 referrerPolicy="no-referrer" 
                                 unoptimized={!milestone.photos[0].includes('res.cloudinary.com')}
@@ -590,6 +592,7 @@ export function GrowthPath({ onMilestoneCountChange }: { onMilestoneCountChange?
                                  src={getOptimizedCloudinaryUrl(photo, 150)} 
                                  alt="Thumbnail" 
                                  fill
+                                 sizes="64px"
                                  className="object-cover" 
                                  referrerPolicy="no-referrer" 
                                  unoptimized={!photo.includes('res.cloudinary.com')}

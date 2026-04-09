@@ -85,6 +85,7 @@ export function FeaturedMemories() {
             src={getOptimizedCloudinaryUrl(photos[currentIndex].url, 800)}
             alt=""
             fill
+            sizes="100vw"
             className="object-cover blur-2xl opacity-50 scale-110"
             referrerPolicy="no-referrer"
             unoptimized={!photos[currentIndex].url.includes('res.cloudinary.com')}
@@ -97,6 +98,7 @@ export function FeaturedMemories() {
                 src={getOptimizedCloudinaryUrl(photos[currentIndex].url, 1200)}
                 alt={photos[currentIndex].authorName || "Featured Memory"}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 className="object-contain drop-shadow-2xl"
                 referrerPolicy="no-referrer"
                 unoptimized={!photos[currentIndex].url.includes('res.cloudinary.com')}
