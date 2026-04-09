@@ -319,7 +319,7 @@ export function LegacyGallery() {
               </div>
               <div className="p-6 overflow-y-auto flex-1 text-stone-800">
                 <div className="aspect-video w-full rounded-xl overflow-hidden bg-stone-100 mb-6 relative">
-                  <Image src={previewUrl} alt="Preview" fill className="object-contain" unoptimized />
+                  <Image src={previewUrl} alt="Preview" fill sizes="(max-width: 768px) 100vw, 400px" className="object-contain" unoptimized />
                 </div>
                 <div className="mb-6">
                   <label className="block text-sm font-medium mb-2">Có ai trong ảnh?</label>
@@ -378,7 +378,7 @@ export function LegacyGallery() {
             <button onClick={() => setIsStoryMode(false)} className="text-white"><X size={28} /></button>
           </div>
           <div className="flex-1 relative bg-black flex items-center justify-center">
-            <Image key={photos[storyIndex].id} src={getOptimizedCloudinaryUrl(photos[storyIndex].url, 1200)} alt="Story" fill className="object-contain" unoptimized />
+            <Image key={photos[storyIndex].id} src={getOptimizedCloudinaryUrl(photos[storyIndex].url, 1200)} alt="Story" fill sizes="100vw" className="object-contain" unoptimized />
           </div>
         </div>
       )}
@@ -412,6 +412,7 @@ export function LegacyGallery() {
                 src={getOptimizedCloudinaryUrl(photos[selectedPhotoIndex].url, 1600)} 
                 alt="Full view" 
                 fill 
+                sizes="100vw"
                 className="object-contain" 
                 unoptimized={!photos[selectedPhotoIndex].url.includes('res.cloudinary.com')}
               />

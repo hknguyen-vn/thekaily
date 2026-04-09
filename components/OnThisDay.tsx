@@ -96,6 +96,7 @@ export function OnThisDay() {
           src={getOptimizedCloudinaryUrl(currentPhoto.url, 800)}
           alt=""
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
           className="object-cover"
           referrerPolicy="no-referrer"
           unoptimized={!currentPhoto.url.includes('res.cloudinary.com')}
