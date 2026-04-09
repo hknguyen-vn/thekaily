@@ -1,0 +1,7 @@
+{
+  "/api/memories/route": "app/api/memories/route.js",
+  "/api/photos/route": "app/api/photos/route.js",
+  "/api/albums/route": "app/api/albums/route.js",
+  "/page": "app/page.js",
+  "/family-tree/page": "app/family-tree/page.js"
+}

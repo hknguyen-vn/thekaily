@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "Lora", serif;
+  --font-body: "Nunito", sans-serif;
+  --font-sans: "Nunito", sans-serif;
+  
+  --color-surface: #FCF9F6;
+  --color-on-surface: #4A3F35;
+  --color-on-surface-variant: #8C7A6B;
+  --color-primary: #D97757;
+  --color-surface-container-low: #F5EFE9;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-primary-container: #FADCD2;
+  --color-on-primary-container: #5C2D1E;
+  
+  /* Warm Earth Palette (Replacing Stone) */
+  --color-stone-50: #FCF9F6;
+  --color-stone-100: #F5EFE9;
+  --color-stone-200: #E8DCCF;
+  --color-stone-300: #D4C1AE;
+  --color-stone-400: #BCA38F;
+  --color-stone-500: #A38570;
+  --color-stone-600: #8C6D58;
+  --color-stone-700: #735643;
+  --color-stone-800: #594131;
+  --color-stone-900: #402E22;
+}
+
+body {
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-stone-200);
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-stone-300);
+}

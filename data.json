@@ -1,0 +1,23 @@
+{
+  "memories": [],
+  "likes": [
+    {
+      "id": "d6cd3a3c-143e-4844-9ed6-cd56aa7b8481",
+      "memoryId": "z7393552933866_005_9804afd6cf63efba353e264de6215f5f_wizqhq",
+      "userUid": "user-dad",
+      "userName": "Bố",
+      "createdAt": "2026-04-09T04:29:13.326Z"
+    }
+  ],
+  "comments": [
+    {
+      "id": "dc39619b-abbb-416e-9ef4-66bbeb0e835f",
+      "memoryId": "z7393552933866_005_9804afd6cf63efba353e264de6215f5f_wizqhq",
+      "userUid": "user-dad",
+      "userName": "Bố",
+      "userPhoto": "https://api.dicebear.com/7.x/avataaars/svg?seed=dad",
+      "content": "2",
+      "createdAt": "2026-04-09T04:29:19.689Z"
+    }
+  ]
+}
