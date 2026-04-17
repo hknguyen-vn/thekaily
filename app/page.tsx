@@ -30,7 +30,7 @@ import {
   Network
 } from 'lucide-react';
 import { Notifications } from '@/components/Notifications';
-import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'motion/react';
 
 export default function Home() {
   const { userProfile } = useAuth();
@@ -38,6 +38,17 @@ export default function Home() {
   const [milestoneCount, setMilestoneCount] = useState(0);
   const [greeting, setGreeting] = useState('Chào bạn');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,11 +70,17 @@ export default function Home() {
     <div className="bg-surface text-on-surface min-h-screen font-body selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
       {/* TopAppBar */}
       <motion.header
+        initial={{ y: 0 }}
         animate={{
+          y: isVisible ? 0 : -100,
           backgroundColor: isScrolled ? 'rgba(252, 249, 246, 0.95)' : 'rgba(252, 249, 246, 0.5)',
           backdropFilter: isScrolled ? 'blur(20px)' : 'blur(5px)',
           boxShadow: isScrolled ? '0 10px 30px -10px rgba(0,0,0,0.05)' : 'none',
           borderBottom: isScrolled ? '1px solid rgba(0,0,0,0.03)' : '1px solid transparent'
+        }}
+        transition={{ 
+          y: { duration: 0.3, ease: "easeInOut" },
+          default: { duration: 0.3 }
         }}
         className="fixed top-0 w-full z-50 flex justify-between items-center px-6 md:px-10 py-5 transition-all duration-300"
       >

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { ImagePlus, Camera, Trash2, Loader2, X, Filter, ChevronLeft, ChevronRight, Edit2, Check, Play, Pause, Image as ImageIcon } from 'lucide-react';
+import { ImagePlus, Camera, Trash2, Loader2, X, Filter, ChevronLeft, ChevronRight, Edit2, Check, Play, Pause, Image as ImageIcon, MoreHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MemoryInteractions } from './MemoryInteractions';
@@ -49,6 +49,7 @@ export function LegacyGallery() {
   const [storyIndex, setStoryIndex] = useState(0);
   const [storyProgress, setStoryProgress] = useState(0);
   const [isStoryPaused, setIsStoryPaused] = useState(false);
+  const [showPhotoActions, setShowPhotoActions] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -86,6 +87,7 @@ export function LegacyGallery() {
     if (selectedPhotoIndex !== null && photos[selectedPhotoIndex]) {
       setEditPeople(photos[selectedPhotoIndex].people || []);
     }
+    setShowPhotoActions(false);
   }, [selectedPhotoIndex, photos]);
 
   useEffect(() => {
@@ -453,31 +455,68 @@ export function LegacyGallery() {
               />
             </motion.div>
             
-            <motion.div 
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="mt-8 w-full max-w-2xl bg-white/5 border border-white/10 p-6 rounded-3xl backdrop-blur-md text-white" 
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <p className="text-xl font-light font-headline italic">{photos[selectedPhotoIndex].caption || 'Khoảnh khắc trân quý'}</p>
-                  <div className="flex items-center gap-2 mt-2 text-white/40 text-[10px] font-bold uppercase tracking-widest">
-                    <span>{new Date(photos[selectedPhotoIndex].date_taken || photos[selectedPhotoIndex].createdAt).toLocaleDateString('vi-VN')}</span>
+            {(photos[selectedPhotoIndex].caption || 
+              (photos[selectedPhotoIndex].people && photos[selectedPhotoIndex].people.length > 0) ||
+              (userProfile?.role === 'admin' || userProfile?.uid === photos[selectedPhotoIndex].authorUid)) && (
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="mt-8 w-full max-w-2xl bg-black/40 border border-white/10 p-6 rounded-3xl backdrop-blur-md text-white" 
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    {photos[selectedPhotoIndex].caption ? (
+                      <p className="text-xl font-light font-headline italic mb-3">{photos[selectedPhotoIndex].caption}</p>
+                    ) : (photos[selectedPhotoIndex].people?.length === 0) && (
+                      <p className="text-stone-400 text-sm italic mb-3">Không có mô tả</p>
+                    )}
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {photos[selectedPhotoIndex].people?.map(person => (
+                        <span key={person} className="px-2.5 py-1 bg-white/10 rounded-lg text-[11px] font-bold uppercase tracking-wider border border-white/5">
+                          {person}
+                        </span>
+                      ))}
+                      <span className="ml-auto text-white/40 text-[10px] font-bold uppercase tracking-widest self-center">
+                        {new Date(photos[selectedPhotoIndex].date_taken || photos[selectedPhotoIndex].createdAt).toLocaleDateString('vi-VN')}
+                      </span>
+                    </div>
                   </div>
+                  {(userProfile?.role === 'admin' || userProfile?.uid === photos[selectedPhotoIndex].authorUid) && (
+                    <div className="relative">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setShowPhotoActions(!showPhotoActions); }}
+                        className="p-3 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white rounded-2xl transition-all active:scale-95"
+                        title="Tùy chọn"
+                      >
+                        <MoreHorizontal size={20} />
+                      </button>
+                      
+                      <AnimatePresence>
+                        {showPhotoActions && (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                            className="absolute bottom-full right-0 mb-2 w-32 bg-stone-900 border border-white/10 rounded-2xl shadow-xl overflow-hidden z-[80]"
+                          >
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); setShowPhotoActions(false); setShowDeleteConfirm(photos[selectedPhotoIndex].id); }}
+                              className="w-full flex items-center gap-2 px-4 py-3 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium"
+                            >
+                              <Trash2 size={16} />
+                              Xóa ảnh
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
-                {(userProfile?.role === 'admin' || userProfile?.uid === photos[selectedPhotoIndex].authorUid) && (
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(photos[selectedPhotoIndex].id); }}
-                    className="p-3 bg-red-500/20 hover:bg-red-500 text-red-500 hover:text-white rounded-2xl transition-all active:scale-95"
-                    title="Xóa ảnh"
-                  >
-                    <Trash2 size={20} />
-                  </button>
-                )}
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
