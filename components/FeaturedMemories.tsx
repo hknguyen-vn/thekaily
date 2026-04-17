@@ -82,13 +82,14 @@ export function FeaturedMemories() {
         >
           {/* Blurred Background for Portrait images */}
           <Image
-            src={getOptimizedCloudinaryUrl(photos[currentIndex].url, 800)}
+            src={getOptimizedCloudinaryUrl(photos[currentIndex].url, 50)}
             alt=""
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 1200px"
             className="object-cover blur-2xl opacity-50 scale-110"
             referrerPolicy="no-referrer"
             unoptimized={!photos[currentIndex].url.includes('res.cloudinary.com')}
+            priority={currentIndex === 0}
           />
           
           {/* Main Focused Image */}
@@ -102,7 +103,7 @@ export function FeaturedMemories() {
                 className="object-contain drop-shadow-2xl"
                 referrerPolicy="no-referrer"
                 unoptimized={!photos[currentIndex].url.includes('res.cloudinary.com')}
-                priority
+                priority={currentIndex === 0}
               />
             </div>
           </div>

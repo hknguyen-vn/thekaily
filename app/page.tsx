@@ -2,24 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { StatsStrip } from '@/components/StatsStrip';
-import { FamilyVault } from '@/components/FamilyVault';
-import { LegacyGallery } from '@/components/LegacyGallery';
-import { GrowthPath } from '@/components/GrowthPath';
-import { FeaturedMemories } from '@/components/FeaturedMemories';
-import { OnThisDay } from '@/components/OnThisDay';
-import { ImportantDates } from '@/components/ImportantDates';
+import dynamic from 'next/dynamic';
+
+const StatsStrip = dynamic(() => import('@/components/StatsStrip').then(mod => mod.StatsStrip));
+const FamilyVault = dynamic(() => import('@/components/FamilyVault').then(mod => mod.FamilyVault));
+const LegacyGallery = dynamic(() => import('@/components/LegacyGallery').then(mod => mod.LegacyGallery));
+const GrowthPath = dynamic(() => import('@/components/GrowthPath').then(mod => mod.GrowthPath));
+const FeaturedMemories = dynamic(() => import('@/components/FeaturedMemories').then(mod => mod.FeaturedMemories));
+const OnThisDay = dynamic(() => import('@/components/OnThisDay').then(mod => mod.OnThisDay));
+const ImportantDates = dynamic(() => import('@/components/ImportantDates').then(mod => mod.ImportantDates));
 import { FamilyTree } from '@/components/FamilyTree';
 import { UserMenu } from '@/components/UserMenu';
-import { 
-  Plus, 
-  Search, 
-  Calendar as CalendarIcon, 
-  Bell, 
-  ChevronRight, 
-  Mail, 
-  Facebook, 
-  Instagram, 
+import {
+  Plus,
+  Search,
+  Calendar as CalendarIcon,
+  Bell,
+  ChevronRight,
+  Mail,
+  Facebook,
+  Instagram,
   Twitter as TwitterIcon,
   Archive,
   Image as ImageIcon,
@@ -42,7 +44,7 @@ export default function Home() {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
-    
+
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('Chào buổi sáng');
     else if (hour < 18) setGreeting('Chào buổi chiều');
@@ -56,7 +58,7 @@ export default function Home() {
   return (
     <div className="bg-surface text-on-surface min-h-screen font-body selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
       {/* TopAppBar */}
-      <motion.header 
+      <motion.header
         animate={{
           backgroundColor: isScrolled ? 'rgba(252, 249, 246, 0.95)' : 'rgba(252, 249, 246, 0.5)',
           backdropFilter: isScrolled ? 'blur(20px)' : 'blur(5px)',
@@ -66,7 +68,7 @@ export default function Home() {
         className="fixed top-0 w-full z-50 flex justify-between items-center px-6 md:px-10 py-5 transition-all duration-300"
       >
         <div className="flex items-center gap-8">
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="text-2xl font-light text-stone-800 tracking-tighter font-headline cursor-default"
@@ -75,12 +77,12 @@ export default function Home() {
           </motion.span>
           <nav className="hidden lg:flex gap-8">
             {['Thư viện', 'Kho lưu trữ', 'Hành trình', 'Gia phả'].map((item, i) => (
-              <motion.a 
+              <motion.a
                 key={item}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.1 }}
-                className="text-stone-500 hover:text-primary transition-colors font-headline tracking-tight font-light text-sm" 
+                className="text-stone-500 hover:text-primary transition-colors font-headline tracking-tight font-light text-sm"
                 href={item === 'Thư viện' ? '#legacy' : item === 'Kho lưu trữ' ? '#vault' : item === 'Hành trình' ? '#growth' : '/family-tree'}
               >
                 {item}
@@ -96,7 +98,7 @@ export default function Home() {
               { label: 'Hành trình', id: '#growth', icon: <Activity size={20} /> },
               { label: 'Gia phả', id: '/family-tree', icon: <Network size={20} /> }
             ].map((item) => (
-              <a 
+              <a
                 key={item.label}
                 href={item.id}
                 className="p-2 text-stone-400 hover:text-primary transition-colors"
@@ -125,11 +127,11 @@ export default function Home() {
             { id: 'growth', icon: <Activity size={20} />, label: 'Hành trình', href: '#growth' },
             { id: 'tree', icon: <Network size={20} />, label: 'Cây gia phả', href: '/family-tree' }
           ].map((item) => (
-            <motion.a 
+            <motion.a
               key={item.id}
               whileHover={{ x: 4, backgroundColor: 'rgba(255,255,255,0.8)' }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-4 px-6 py-4 text-stone-500 hover:text-stone-900 rounded-2xl transition-all" 
+              className="flex items-center gap-4 px-6 py-4 text-stone-500 hover:text-stone-900 rounded-2xl transition-all"
               href={item.href}
             >
               {item.icon}
@@ -140,24 +142,24 @@ export default function Home() {
       </aside>
 
       {/* Main Content */}
-      <motion.main 
+      <motion.main
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="lg:ml-72 pt-28 pb-32 px-6 md:px-10 max-w-7xl mx-auto"
-      >
-        
+      >nhé
+
         {/* Personalized Greeting */}
         <div className="mb-12">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
             className="text-4xl md:text-6xl font-black text-stone-900 font-headline tracking-tighter leading-none"
           >
-            {greeting}, <br/> <span className="text-primary italic font-light">{displayName}</span>
+            {greeting}, <br /> <span className="text-primary italic font-light">{displayName}</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}

@@ -561,7 +561,7 @@ export function GrowthPath({ onMilestoneCountChange }: { onMilestoneCountChange?
                         <div className="relative rounded-2xl overflow-hidden mb-2 bg-stone-900 h-64 md:h-80">
                           {/* Ambient Blur Background */}
                           <Image 
-                            src={getOptimizedCloudinaryUrl(milestone.photos[0], 400)} 
+                            src={getOptimizedCloudinaryUrl(milestone.photos[0], 50)} 
                             alt="" 
                             fill
                             sizes="(max-width: 768px) 100vw, 50vw"

@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Allow cross-origin requests for Next.js dev server from local IP
+  allowedDevOrigins: ['192.168.1.9', 'localhost'],
 };
 
 export default nextConfig;

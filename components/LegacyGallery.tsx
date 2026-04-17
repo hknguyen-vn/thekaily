@@ -280,7 +280,7 @@ export function LegacyGallery() {
                 onClick={() => setSelectedPhotoIndex(idx)}
               >
                 <Image 
-                  src={getOptimizedCloudinaryUrl(photo.url, 800)} 
+                  src={getOptimizedCloudinaryUrl(photo.url, 500)} 
                   alt={photo.caption || "Family memory"} 
                   width={500} 
                   height={750}
@@ -378,7 +378,7 @@ export function LegacyGallery() {
             <button onClick={() => setIsStoryMode(false)} className="text-white"><X size={28} /></button>
           </div>
           <div className="flex-1 relative bg-black flex items-center justify-center">
-            <Image key={photos[storyIndex].id} src={getOptimizedCloudinaryUrl(photos[storyIndex].url, 1200)} alt="Story" fill sizes="100vw" className="object-contain" unoptimized />
+            <Image key={photos[storyIndex].id} src={getOptimizedCloudinaryUrl(photos[storyIndex].url, 1200)} alt="Story" fill sizes="(max-width: 768px) 100vw, 1200px" className="object-contain" unoptimized />
           </div>
         </div>
       )}
@@ -396,23 +396,44 @@ export function LegacyGallery() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => setSelectedPhotoIndex(null)} 
-              className="absolute top-6 right-6 text-white/70 hover:text-white p-2 rounded-full hover:bg-white/10 transition-all"
+              className="absolute top-6 right-6 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-all z-[60]"
             >
               <X size={32} />
             </motion.button>
             
+            {photos.length > 1 && (
+              <>
+                <motion.button 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  onClick={(e) => { e.stopPropagation(); setSelectedPhotoIndex((prev) => prev !== null ? (prev === 0 ? photos.length - 1 : prev - 1) : null); }} 
+                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-all z-[60]"
+                >
+                  <ChevronLeft size={36} />
+                </motion.button>
+                <motion.button 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  onClick={(e) => { e.stopPropagation(); setSelectedPhotoIndex((prev) => prev !== null ? (prev === photos.length - 1 ? 0 : prev + 1) : null); }} 
+                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-all z-[60]"
+                >
+                  <ChevronRight size={36} />
+                </motion.button>
+              </>
+            )}
+
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-full h-[75vh]" 
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="relative w-full h-[75vh] z-[50]" 
               onClick={e => e.stopPropagation()}
             >
               <Image 
                 src={getOptimizedCloudinaryUrl(photos[selectedPhotoIndex].url, 1600)} 
                 alt="Full view" 
                 fill 
-                sizes="100vw"
+                sizes="(max-width: 768px) 100vw, 1200px"
                 className="object-contain" 
                 unoptimized={!photos[selectedPhotoIndex].url.includes('res.cloudinary.com')}
               />
