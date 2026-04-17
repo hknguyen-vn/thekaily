@@ -396,9 +396,10 @@ export function LegacyGallery() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               onClick={() => setSelectedPhotoIndex(null)} 
-              className="absolute top-6 right-6 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-all z-[60]"
+              className="absolute top-4 right-4 md:top-10 md:right-10 text-white p-4 rounded-full bg-black/40 backdrop-blur-md hover:bg-black/60 transition-all z-[70] flex items-center justify-center shadow-lg border border-white/10"
+              title="Close"
             >
-              <X size={32} />
+              <X size={24} className="md:w-8 md:h-8" />
             </motion.button>
             
             {photos.length > 1 && (
@@ -407,17 +408,17 @@ export function LegacyGallery() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   onClick={(e) => { e.stopPropagation(); setSelectedPhotoIndex((prev) => prev !== null ? (prev === 0 ? photos.length - 1 : prev - 1) : null); }} 
-                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-all z-[60]"
+                  className="absolute left-2 md:left-8 top-1/2 -translate-y-1/2 text-white p-4 rounded-full bg-black/20 backdrop-blur-sm md:bg-transparent hover:bg-white/10 transition-all z-[60]"
                 >
-                  <ChevronLeft size={36} />
+                  <ChevronLeft size={32} className="md:w-10 md:h-10" />
                 </motion.button>
                 <motion.button 
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   onClick={(e) => { e.stopPropagation(); setSelectedPhotoIndex((prev) => prev !== null ? (prev === photos.length - 1 ? 0 : prev + 1) : null); }} 
-                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 rounded-full hover:bg-white/10 transition-all z-[60]"
+                  className="absolute right-2 md:right-8 top-1/2 -translate-y-1/2 text-white p-4 rounded-full bg-black/20 backdrop-blur-sm md:bg-transparent hover:bg-white/10 transition-all z-[60]"
                 >
-                  <ChevronRight size={36} />
+                  <ChevronRight size={32} className="md:w-10 md:h-10" />
                 </motion.button>
               </>
             )}
@@ -425,17 +426,30 @@ export function LegacyGallery() {
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="relative w-full h-[75vh] z-[50]" 
+              className="relative w-full h-[65vh] md:h-[75vh] z-[50] flex items-center justify-center touch-none" 
               onClick={e => e.stopPropagation()}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                const swipe = info.offset.x;
+                if (swipe < -50) {
+                  setSelectedPhotoIndex((prev) => prev !== null ? (prev === photos.length - 1 ? 0 : prev + 1) : null);
+                } else if (swipe > 50) {
+                  setSelectedPhotoIndex((prev) => prev !== null ? (prev === 0 ? photos.length - 1 : prev - 1) : null);
+                }
+              }}
             >
               <Image 
                 src={getOptimizedCloudinaryUrl(photos[selectedPhotoIndex].url, 1600)} 
                 alt="Full view" 
                 fill 
-                sizes="(max-width: 768px) 100vw, 1200px"
-                className="object-contain" 
+                sizes="100vw"
+                className="object-contain pointer-events-none" 
                 unoptimized={!photos[selectedPhotoIndex].url.includes('res.cloudinary.com')}
+                priority
               />
             </motion.div>
             
