@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import dynamic from 'next/dynamic';
 
-const StatsStrip = dynamic(() => import('@/components/StatsStrip').then(mod => mod.StatsStrip));
-const FamilyVault = dynamic(() => import('@/components/FamilyVault').then(mod => mod.FamilyVault));
-const LegacyGallery = dynamic(() => import('@/components/LegacyGallery').then(mod => mod.LegacyGallery));
-const GrowthPath = dynamic(() => import('@/components/GrowthPath').then(mod => mod.GrowthPath));
-const FeaturedMemories = dynamic(() => import('@/components/FeaturedMemories').then(mod => mod.FeaturedMemories));
+const StatsStrip = dynamic(() => import('@/components/StatsStrip').then(mod => mod.StatsStrip), { loading: () => <div className="h-20 bg-stone-50 animate-pulse rounded-2xl mb-8" /> });
+const FamilyVault = dynamic(() => import('@/components/FamilyVault').then(mod => mod.FamilyVault), { loading: () => <div className="h-96 bg-stone-50 animate-pulse rounded-3xl mb-8" /> });
+const LegacyGallery = dynamic(() => import('@/components/LegacyGallery').then(mod => mod.LegacyGallery), { loading: () => <div className="h-96 bg-stone-50 animate-pulse rounded-3xl mb-8" /> });
+const GrowthPath = dynamic(() => import('@/components/GrowthPath').then(mod => mod.GrowthPath), { loading: () => <div className="h-96 bg-stone-50 animate-pulse rounded-3xl mb-8" /> });
+const FeaturedMemories = dynamic(() => import('@/components/FeaturedMemories').then(mod => mod.FeaturedMemories), { loading: () => <div className="h-[500px] bg-stone-50 animate-pulse rounded-3xl mb-12" /> });
 const OnThisDay = dynamic(() => import('@/components/OnThisDay').then(mod => mod.OnThisDay));
 const ImportantDates = dynamic(() => import('@/components/ImportantDates').then(mod => mod.ImportantDates));
 import { FamilyTree } from '@/components/FamilyTree';
@@ -101,8 +101,9 @@ export default function Home() {
               <a
                 key={item.label}
                 href={item.id}
-                className="p-2 text-stone-400 hover:text-primary transition-colors"
+                className="p-2.5 text-stone-400 hover:text-primary transition-colors active:scale-90"
                 title={item.label}
+                aria-label={item.label}
               >
                 {item.icon}
               </a>
