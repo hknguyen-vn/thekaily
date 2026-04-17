@@ -19,7 +19,7 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Plus, Download, Upload, Trash2, Edit2, Network, UserPlus, Heart, Baby, User, Maximize2 } from 'lucide-react';
+import { Plus, Download, Upload, Trash2, Edit2, Network, UserPlus, Heart, Baby, User, Maximize2, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { FamilyMemberNode } from './FamilyMemberNode';
@@ -53,6 +53,7 @@ function FamilyTreeContent({ isPage = false }: { isPage?: boolean }) {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
 
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const { fitView } = useReactFlow();
 
   // Load from Supabase on mount
@@ -186,6 +187,43 @@ function FamilyTreeContent({ isPage = false }: { isPage?: boolean }) {
       });
     }
   }, [setNodes, setEdges, fitView]);
+
+  const onNodeMouseEnter = useCallback((_: React.MouseEvent, node: Node) => {
+    setHoveredNodeId(node.id);
+  }, []);
+
+  const onNodeMouseLeave = useCallback(() => {
+    setHoveredNodeId(null);
+  }, []);
+
+  // Highlight edges based on selection or hover
+  const highlightedEdges = useMemo(() => {
+    return edges.map(edge => {
+      const isConnectedToHovered = hoveredNodeId === edge.source || hoveredNodeId === edge.target;
+      const isConnectedToSelected = selectedMember?.id === edge.source || selectedMember?.id === edge.target;
+      
+      if (isConnectedToHovered || isConnectedToSelected) {
+        return {
+          ...edge,
+          animated: true,
+          style: { 
+            ...edge.style, 
+            stroke: edge.id.startsWith('s-') ? '#e11d48' : '#fb923c', 
+            strokeWidth: edge.id.startsWith('s-') ? 4 : 3,
+            opacity: 1
+          },
+          labelStyle: { ...edge.labelStyle, opacity: 1, fontWeight: 'bold' }
+        };
+      }
+      
+      return {
+        ...edge,
+        animated: false,
+        style: { ...edge.style, opacity: (hoveredNodeId || selectedMember) ? 0.3 : 1 },
+        labelStyle: { ...edge.labelStyle, opacity: (hoveredNodeId || selectedMember) ? 0.3 : 1 }
+      };
+    });
+  }, [edges, hoveredNodeId, selectedMember]);
 
   useEffect(() => {
     updateGraph(members);
@@ -332,11 +370,13 @@ function FamilyTreeContent({ isPage = false }: { isPage?: boolean }) {
     <div className={`${isPage ? 'h-full w-full' : 'h-[800px] w-full'} bg-stone-50 rounded-3xl border border-stone-200 overflow-hidden relative shadow-inner`}>
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={highlightedEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
+        onNodeMouseEnter={onNodeMouseEnter}
+        onNodeMouseLeave={onNodeMouseLeave}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
@@ -396,6 +436,53 @@ function FamilyTreeContent({ isPage = false }: { isPage?: boolean }) {
             </div>
           </div>
         </Panel>
+        
+        {/* Quick View Hover Info */}
+        <AnimatePresence>
+          {hoveredNodeId && !isPanelOpen && (
+            <Panel position="top-right" className="mr-16">
+              <motion.div
+                initial={{ opacity: 0, x: 20, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 10, scale: 0.95 }}
+                className="bg-white/90 backdrop-blur-xl p-5 rounded-[2rem] border border-stone-200 shadow-xl w-64 pointer-events-none"
+              >
+                {(() => {
+                  const m = members.find(member => member.id === hoveredNodeId);
+                  if (!m) return null;
+                  return (
+                    <>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`relative w-12 h-12 rounded-full overflow-hidden border-2 ${m.gender === 'male' ? 'border-blue-100' : 'border-rose-100'}`}>
+                          {m.avatar ? (
+                            <Image src={m.avatar} alt="" fill className="object-cover" unoptimized />
+                          ) : (
+                            <div className="w-full h-full bg-stone-100 flex items-center justify-center text-stone-400">
+                              <User size={20} />
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-stone-800 leading-tight">{m.name}</h4>
+                          <p className="text-[10px] text-stone-400 uppercase tracking-widest">{m.gender === 'male' ? 'Nam' : 'Nữ'}</p>
+                        </div>
+                      </div>
+                      {m.bio && (
+                        <p className="text-xs text-stone-600 line-clamp-3 italic leading-relaxed bg-stone-50 p-3 rounded-2xl border border-stone-100">
+                          "{m.bio}"
+                        </p>
+                      )}
+                      <div className="mt-3 flex items-center gap-2 text-[10px] text-stone-400">
+                        <Info size={12} />
+                        <span>Click để xem chi tiết & kỷ niệm</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </motion.div>
+            </Panel>
+          )}
+        </AnimatePresence>
       </ReactFlow>
 
       {/* Detail Panel */}
@@ -462,6 +549,8 @@ export function FamilyTree({ isPage = false }: { isPage?: boolean }) {
   );
 }
 
+import { Milestone } from './GrowthPath';
+
 interface MemberPanelProps {
   member: FamilyMember;
   members: FamilyMember[];
@@ -474,10 +563,32 @@ interface MemberPanelProps {
 
 function MemberPanel({ member, members, isEditMode, onClose, onUpdate, onDelete, onSetEditMode }: MemberPanelProps) {
   const [formData, setFormData] = useState<FamilyMember>(member);
+  const [relatedMilestones, setRelatedMilestones] = useState<Milestone[]>([]);
+  const [loadingMemories, setLoadingMemories] = useState(false);
 
   useEffect(() => {
     setFormData(member);
+    fetchRelatedMilestones(member.name);
   }, [member]);
+
+  const fetchRelatedMilestones = async (name: string) => {
+    setLoadingMemories(true);
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('family_milestones')
+        .select('*')
+        .contains('people', [name])
+        .limit(3);
+      
+      if (error) throw error;
+      setRelatedMilestones(data || []);
+    } catch (err) {
+      console.error('Error fetching related milestones:', err);
+    } finally {
+      setLoadingMemories(false);
+    }
+  };
 
   const handleChange = (field: keyof FamilyMember, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -695,6 +806,46 @@ function MemberPanel({ member, members, isEditMode, onClose, onUpdate, onDelete,
               )}
             </div>
           </div>
+
+          {/* Related Memories Section */}
+          {!isEditMode && (
+            <div className="pt-6 border-t border-stone-100 space-y-4">
+              <h4 className="text-sm font-bold text-stone-800 flex items-center gap-2">
+                <Heart size={16} className="text-rose-500" />
+                Kỷ niệm liên quan
+              </h4>
+              
+              {loadingMemories ? (
+                <div className="flex justify-center py-4">
+                  <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                </div>
+              ) : relatedMilestones.length > 0 ? (
+                <div className="grid grid-cols-1 gap-3">
+                  {relatedMilestones.map(m => (
+                    <div key={m.id} className="group/item flex items-center gap-3 p-3 bg-stone-50 rounded-2xl border border-stone-100 hover:bg-white hover:shadow-sm transition-all">
+                      <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-stone-200 flex-shrink-0">
+                        {m.photos && m.photos[0] ? (
+                          <Image src={m.photos[0]} alt="" fill className="object-cover" unoptimized />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-stone-400 bg-stone-100">
+                             <User size={16} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] text-stone-400 font-bold uppercase">{new Date(m.date).toLocaleDateString('vi-VN', { month: 'short', year: 'numeric' })}</p>
+                        <h5 className="text-xs font-bold text-stone-700 truncate">{m.title}</h5>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 px-4 bg-stone-50 rounded-2xl border border-dashed border-stone-200">
+                  <p className="text-[11px] text-stone-400">Chưa có kỷ niệm nào được gắn thẻ {member.name}.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

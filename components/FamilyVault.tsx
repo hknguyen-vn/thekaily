@@ -4,6 +4,7 @@ import { VaultForm } from './VaultForm';
 import { MemoryInteractions } from './MemoryInteractions';
 import { MessageSquareHeart, Trash2, Edit2, Globe, Users, Lock, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { EmptyState } from './EmptyState';
 import { AnimatePresence, motion } from 'motion/react';
 
 interface Memory {
@@ -180,10 +181,14 @@ export function FamilyVault({ onNoteCountChange }: { onNoteCountChange?: (count:
             ))}
           </div>
         ) : memories.length === 0 ? (
-          <div className="text-center py-10 text-stone-400 flex flex-col items-center justify-center h-full">
-            <MessageSquareHeart size={32} className="text-stone-200 mb-3" />
-            <p className="text-sm">Chưa có lời nhắn nào. Hãy gửi lời yêu thương đầu tiên nhé!</p>
-          </div>
+          <EmptyState 
+            icon={MessageSquareHeart}
+            title="Chưa có lời nhắn nào"
+            description="Hãy gửi lời yêu thương đầu tiên để lưu giữ những kỷ niệm của gia đình nhé!"
+            actionLabel="Gửi lời nhắn"
+            onAction={() => setShowVaultForm(true)}
+            className="py-12"
+          />
         ) : (
           memories.map(memory => (
             <div key={memory.id} className="bg-white p-4 rounded-2xl border border-stone-100 hover:border-stone-200 hover:shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all group relative flex flex-col gap-3">

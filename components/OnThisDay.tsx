@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CalendarHeart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
+import { EmptyState } from './EmptyState';
 
 interface Photo {
   id: string;
@@ -42,29 +43,9 @@ export function OnThisDay() {
         );
       });
 
-      if (onThisDayPhotos.length > 0) {
-        setPhotos(onThisDayPhotos);
-      } else {
-        setPhotos([
-          {
-            id: 'mock-1',
-            url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2070&auto=format&fit=crop',
-            createdAt: new Date(currentYear - 1, currentMonth, currentDate).toISOString(),
-            people: ['Cả nhà']
-          }
-        ]);
-      }
+      setPhotos(onThisDayPhotos);
     } catch (err) {
       console.error('Error fetching On This Day photos:', err);
-      const today = new Date();
-      setPhotos([
-        {
-          id: 'mock-1',
-          url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2070&auto=format&fit=crop',
-          createdAt: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()).toISOString(),
-          people: ['Cả nhà']
-        }
-      ]);
     } finally {
       setLoading(false);
     }
@@ -80,7 +61,24 @@ export function OnThisDay() {
     setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
   };
 
-  if (loading || photos.length === 0) return null;
+  if (loading) return null;
+
+  if (photos.length === 0) {
+    return (
+      <div className="h-full flex flex-col">
+        <div className="flex items-center gap-2 mb-4">
+          <CalendarHeart className="text-rose-500" size={24} />
+          <h2 className="text-xl font-headline font-light text-stone-900">Ngày này năm xưa</h2>
+        </div>
+        <EmptyState 
+          icon={CalendarHeart}
+          title="Không có kỷ niệm cũ"
+          description="Hôm nay chưa có kỷ niệm nào từ những năm trước. Hãy tạo kỷ niệm mới hôm nay nhé!"
+          className="flex-1"
+        />
+      </div>
+    );
+  }
 
   const currentPhoto = photos[currentIndex];
   const yearsAgo = new Date().getFullYear() - new Date(currentPhoto.createdAt).getFullYear();

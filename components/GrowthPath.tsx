@@ -4,9 +4,10 @@ import { Milestone as MilestoneIcon, GraduationCap, Plane, Home, Baby, Briefcase
 import { createClient } from '@/lib/supabase/client';
 import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
 import { useAuth } from '@/contexts/AuthContext';
+import { EmptyState } from './EmptyState';
 import { motion, AnimatePresence } from 'motion/react';
 
-interface Milestone {
+export interface Milestone {
   id: string;
   title: string;
   date: string;
@@ -411,9 +412,14 @@ export function GrowthPath({ onMilestoneCountChange }: { onMilestoneCountChange?
             <Loader2 className="animate-spin text-stone-400" size={24} />
           </div>
         ) : filteredMilestones.length === 0 ? (
-          <div className="text-center py-8 text-stone-400">
-            <p>No milestones found for these filters.</p>
-          </div>
+          <EmptyState 
+            icon={MilestoneIcon}
+            title="Chưa có cột mốc nào"
+            description="Hãy ghi lại những dấu mốc quan trọng trong hành trình khôn lớn của cả nhà."
+            actionLabel="Thêm cột mốc"
+            onAction={() => setShowAddForm(true)}
+            className="py-16"
+          />
         ) : (
           <div className="relative space-y-12 mt-8 mb-4">
             {/* Vertical line for desktop */}

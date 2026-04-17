@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { MemoryInteractions } from './MemoryInteractions';
 import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
+import { EmptyState } from './EmptyState';
 
 interface Photo {
   id: string;
@@ -270,10 +271,14 @@ export function LegacyGallery() {
         ) : (
           <>
             {displayedPhotos.length === 0 && (
-              <div className="col-span-full py-12 text-center bg-stone-50 rounded-2xl border border-dashed border-stone-200 mb-6">
-                <ImageIcon className="mx-auto text-stone-300 mb-3" size={48} />
-                <p className="text-stone-500 font-medium">Chưa có ảnh nào.</p>
-              </div>
+              <EmptyState 
+                icon={ImageIcon}
+                title="Thư viện trống"
+                description="Bắt đầu lưu giữ những khoảnh khắc quý giá của gia đình ngay hôm nay."
+                actionLabel="Tải ảnh lên"
+                onAction={() => fileInputRef.current?.click()}
+                className="col-span-full py-16 mb-6"
+              />
             )}
             {displayedPhotos.map((photo, idx) => (
               <div 

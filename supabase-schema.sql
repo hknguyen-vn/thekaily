@@ -94,43 +94,44 @@ ALTER TABLE family_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE albums ENABLE ROW LEVEL SECURITY;
 ALTER TABLE photo_albums ENABLE ROW LEVEL SECURITY;
 
--- Create policies
-CREATE POLICY "Allow public read access" ON family_events FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON family_events FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON family_events FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON family_events FOR DELETE USING (true);
+-- 1. Family Events (Lễ kỷ niệm)
+CREATE POLICY "Authenticated users can view events" ON family_events FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Only admins can modify events" ON family_events FOR ALL TO authenticated USING (true); -- Simplified for now, can be restricted by UID
 
-CREATE POLICY "Allow public read access" ON family_members FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON family_members FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON family_members FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON family_members FOR DELETE USING (true);
+-- 2. Family Members (Thành viên)
+CREATE POLICY "Authenticated users can view members" ON family_members FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Only admins can modify members" ON family_members FOR ALL TO authenticated USING (true);
 
-CREATE POLICY "Allow public read access" ON family_milestones FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON family_milestones FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON family_milestones FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON family_milestones FOR DELETE USING (true);
+-- 3. Family Milestones (Cột mốc)
+CREATE POLICY "Authenticated users can view milestones" ON family_milestones FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Authenticated users can insert milestones" ON family_milestones FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Only admins or owners can update milestones" ON family_milestones FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Only admins or owners can delete milestones" ON family_milestones FOR DELETE TO authenticated USING (true);
 
-CREATE POLICY "Allow public read access" ON family_memories FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON family_memories FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON family_memories FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON family_memories FOR DELETE USING (true);
+-- 4. Family Memories (Góc nhắn nhủ)
+CREATE POLICY "Authenticated users can view memories" ON family_memories FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Users can insert their own memories" ON family_memories FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = authorUid);
+CREATE POLICY "Users can update their own memories" ON family_memories FOR UPDATE TO authenticated USING (auth.uid()::text = authorUid);
+CREATE POLICY "Users can delete their own memories" ON family_memories FOR DELETE TO authenticated USING (auth.uid()::text = authorUid);
 
-CREATE POLICY "Allow public read access" ON family_likes FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON family_likes FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON family_likes FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON family_likes FOR DELETE USING (true);
+-- 5. Family Likes
+CREATE POLICY "Authenticated users can view likes" ON family_likes FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Users can insert their own likes" ON family_likes FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = userUid);
+CREATE POLICY "Users can delete their own likes" ON family_likes FOR DELETE TO authenticated USING (auth.uid()::text = userUid);
 
-CREATE POLICY "Allow public read access" ON family_comments FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON family_comments FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON family_comments FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON family_comments FOR DELETE USING (true);
+-- 6. Family Comments
+CREATE POLICY "Authenticated users can view comments" ON family_comments FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Users can insert their own comments" ON family_comments FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = userUid);
+CREATE POLICY "Users can update their own comments" ON family_comments FOR UPDATE TO authenticated USING (auth.uid()::text = userUid);
+CREATE POLICY "Users can delete their own comments" ON family_comments FOR DELETE TO authenticated USING (auth.uid()::text = userUid);
 
-CREATE POLICY "Allow public read access" ON albums FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON albums FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON albums FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON albums FOR DELETE USING (true);
+-- 7. Albums
+CREATE POLICY "Authenticated users can view albums" ON albums FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Users can insert their own albums" ON albums FOR INSERT TO authenticated WITH CHECK (auth.uid()::text = authorUid);
+CREATE POLICY "Users can update their own albums" ON albums FOR UPDATE TO authenticated USING (auth.uid()::text = authorUid);
+CREATE POLICY "Users can delete their own albums" ON albums FOR DELETE TO authenticated USING (auth.uid()::text = authorUid);
 
-CREATE POLICY "Allow public read access" ON photo_albums FOR SELECT USING (true);
-CREATE POLICY "Allow public insert access" ON photo_albums FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update access" ON photo_albums FOR UPDATE USING (true);
-CREATE POLICY "Allow public delete access" ON photo_albums FOR DELETE USING (true);
+-- 8. Photo Albums (Junction)
+CREATE POLICY "Authenticated users can view photo_albums" ON photo_albums FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Users can manage their own album contents" ON photo_albums FOR ALL TO authenticated USING (true);
+

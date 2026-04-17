@@ -3,6 +3,7 @@ import { CalendarHeart, Gift, Heart, PartyPopper, Calendar as CalendarIcon, Plus
 import { createClient } from '@/lib/supabase/client';
 import { Lunar } from 'lunar-javascript';
 import { useAuth } from '@/contexts/AuthContext';
+import { EmptyState } from './EmptyState';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface FamilyEvent {
@@ -269,9 +270,14 @@ export function ImportantDates() {
             <Loader2 className="animate-spin text-stone-400" size={24} />
           </motion.div>
         ) : processedEvents.length === 0 ? (
-          <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-8 text-stone-400 bg-stone-50 rounded-2xl border border-dashed border-stone-200">
-            <p>Chưa có ngày kỷ niệm nào được thêm.</p>
-          </motion.div>
+          <EmptyState 
+            icon={CalendarHeart}
+            title="Chưa có ngày kỷ niệm"
+            description="Hãy thêm những ngày sinh nhật, ngày lễ hoặc các dịp đặc biệt của gia đình."
+            actionLabel="Thêm ngày đầu tiên"
+            onAction={() => setShowAddForm(true)}
+            className="py-12"
+          />
         ) : viewMode === 'upcoming' ? (
           <motion.div 
             key="upcoming"
