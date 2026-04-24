@@ -33,13 +33,19 @@ import { Notifications } from '@/components/Notifications';
 import { motion, useScroll, useTransform, AnimatePresence, useMotionValueEvent } from 'motion/react';
 
 export default function Home() {
-  const { userProfile } = useAuth();
+  const { userProfile, loading } = useAuth();
   const [noteCount, setNoteCount] = useState(0);
   const [milestoneCount, setMilestoneCount] = useState(0);
   const [greeting, setGreeting] = useState('Chào bạn');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const { scrollY } = useScroll();
+
+  useEffect(() => {
+    if (!loading && !userProfile) {
+      window.location.href = '/login';
+    }
+  }, [userProfile, loading]);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
@@ -64,7 +70,20 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const displayName = userProfile?.uid === 'guest' ? 'cả nhà' : userProfile?.displayName || 'cả nhà';
+  if (loading || !userProfile) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center p-6 text-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-12 h-12 border-4 border-stone-200 border-t-primary rounded-full mb-6"
+        />
+        <h2 className="text-xl font-headline font-light text-stone-900">Đang chuẩn bị không gian gia đình...</h2>
+      </div>
+    );
+  }
+
+  const displayName = userProfile?.displayName || 'cả nhà';
 
   return (
     <div className="bg-surface text-on-surface min-h-screen font-body selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
@@ -165,7 +184,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="lg:ml-72 pt-28 pb-32 px-6 md:px-10 max-w-7xl mx-auto"
-      >nhé
+      >
 
         {/* Personalized Greeting */}
         <div className="mb-12">
