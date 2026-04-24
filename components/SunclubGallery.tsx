@@ -305,65 +305,29 @@ export function SunclubGallery() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {userProfile ? (
-            <>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="flex items-center gap-1.5 px-4 py-2 bg-amber-500 text-zinc-950 hover:bg-amber-400 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
-              >
-                {uploading ? <Loader2 size={18} className="animate-spin" /> : <ImagePlus size={18} />}
-                Tải ảnh lên
-              </button>
-              <button
-                onClick={() => { if (photos.length > 0) { setStoryIndex(0); setStoryProgress(0); setIsStoryPaused(false); setIsStoryMode(true); } }}
-                disabled={photos.length === 0}
-                className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-zinc-200 text-black rounded-xl font-bold transition-all shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Play size={20} fill="currentColor" />
-                Phát Kỷ Niệm
-              </button>
-              <button
-                onClick={() => setIsAwardMode(true)}
-                className="flex items-center gap-2 px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-amber-900/20"
-              >
-                <Trophy size={20} />
-                Lễ Trao Giải
-              </button>
-              <div className="flex items-center gap-2 pl-2 border-l border-zinc-700">
-                <img
-                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile.username}`}
-                  alt={userProfile.displayName}
-                  className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700"
-                />
-                <span className="text-zinc-400 text-sm font-medium hidden md:block">{userProfile.displayName}</span>
-              </div>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => { if (photos.length > 0) { setStoryIndex(0); setStoryProgress(0); setIsStoryPaused(false); setIsStoryMode(true); } }}
-                disabled={photos.length === 0}
-                className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-zinc-200 text-black rounded-xl font-bold transition-all shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Play size={20} fill="currentColor" />
-                Phát Kỷ Niệm
-              </button>
-              <button
-                onClick={() => setIsAwardMode(true)}
-                className="flex items-center gap-2 px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-amber-900/20"
-              >
-                <Trophy size={20} />
-                Lễ Trao Giải
-              </button>
-              <a
-                href="/login"
-                className="flex items-center gap-2 px-5 py-2.5 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 rounded-xl text-sm font-bold transition-all"
-              >
-                Đăng nhập
-              </a>
-            </>
-          )}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-1.5 px-4 py-2 bg-amber-500 text-zinc-950 hover:bg-amber-400 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
+          >
+            {uploading ? <Loader2 size={18} className="animate-spin" /> : <ImagePlus size={18} />}
+            Tải ảnh lên
+          </button>
+          <button
+            onClick={() => { if (photos.length > 0) { setStoryIndex(0); setStoryProgress(0); setIsStoryPaused(false); setIsStoryMode(true); } }}
+            disabled={photos.length === 0}
+            className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-zinc-200 text-black rounded-xl font-bold transition-all shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Play size={20} fill="currentColor" />
+            Phát Kỷ Niệm
+          </button>
+          <button
+            onClick={() => setIsAwardMode(true)}
+            className="flex items-center gap-2 px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-amber-900/20"
+          >
+            <Trophy size={20} />
+            Lễ Trao Giải
+          </button>
         </div>
       </div>
 
