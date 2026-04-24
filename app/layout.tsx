@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Lora, Nunito } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-const lora = Lora({
+const inter = Inter({
   subsets: ["vietnamese", "latin"],
-  variable: "--font-lora",
+  variable: "--font-inter",
   display: "swap",
 });
 
-const nunito = Nunito({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["vietnamese", "latin"],
-  variable: "--font-nunito",
+  variable: "--font-plus-jakarta",
   display: "swap",
 });
 
@@ -48,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi" suppressHydrationWarning className={`${lora.variable} ${nunito.variable}`}>
+    <html lang="vi" suppressHydrationWarning className={`${inter.variable} ${plusJakartaSans.variable}`}>
       <body className="antialiased">
         <AuthProvider>
           {children}

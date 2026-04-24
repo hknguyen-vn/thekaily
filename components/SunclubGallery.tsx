@@ -118,6 +118,22 @@ export function SunclubGallery() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPhotoIndex, isStoryMode, photos.length]);
 
+  const isCategoryMatch = (photoCats: string[] | undefined, targetCat: string) => {
+    if (!photoCats || !Array.isArray(photoCats)) return false;
+    return photoCats.some(cat => {
+      if (cat === targetCat) return true;
+      // Support legacy "Khởi đầu" naming
+      if (targetCat.startsWith('Bước khởi đầu') && cat.startsWith('Bước khởi đầu')) return true;
+      return false;
+    });
+  };
+
+  const filteredPhotos = photos.filter(p =>
+    filterCategory === 'All' || isCategoryMatch(p.categories, filterCategory)
+  );
+
+  const displayedPhotos = filteredPhotos.slice(0, displayLimit);
+
   // Infinite Scroll Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -226,22 +242,6 @@ export function SunclubGallery() {
     }
   };
 
-  const isCategoryMatch = (photoCats: string[] | undefined, targetCat: string) => {
-    if (!photoCats || !Array.isArray(photoCats)) return false;
-    return photoCats.some(cat => {
-      if (cat === targetCat) return true;
-      // Support legacy "Khởi đầu" naming
-      if (targetCat.startsWith('Bước khởi đầu') && cat.startsWith('Bước khởi đầu')) return true;
-      return false;
-    });
-  };
-
-  const filteredPhotos = photos.filter(p =>
-    filterCategory === 'All' || isCategoryMatch(p.categories, filterCategory)
-  );
-
-  const displayedPhotos = filteredPhotos.slice(0, displayLimit);
-
   const getCount = (val: string) => {
     if (val === 'All') return photos.length;
     return photos.filter(p => isCategoryMatch(p.categories, val)).length;
@@ -251,7 +251,7 @@ export function SunclubGallery() {
     <div className="bg-zinc-950 rounded-3xl p-6 border border-zinc-800 shadow-xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-5">
-          <div className="relative w-16 h-16 md:w-40 md:h-40 overflow-hidden rounded-4xl border-2 border-zinc-800 shadow-2xl rotate-3 bg-zinc-900">
+          <div className="relative w-20 h-20 md:w-40 md:h-40 overflow-hidden rounded-4xl border-2 border-zinc-800 shadow-2xl rotate-3 bg-zinc-900">
             <Image
               src="/sunclub-logo.jpg"
               alt="SunClub Logo"
@@ -616,16 +616,16 @@ export function SunclubGallery() {
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="mb-14 z-10"
             >
-              <div className="w-36 h-36 md:w-44 md:h-44 border-4 border-white/20 rounded-full flex items-center justify-center bg-white relative overflow-hidden shadow-[0_0_60px_rgba(255,255,255,0.2)]">
+              <div className="w-28 h-28 md:w-46 md:h-36 border-4 border-white/20 rounded-[2rem] flex items-center justify-center bg-white relative overflow-hidden shadow-[0_0_60px_rgba(255,255,255,0.2)]">
                 <Image
                   src="/sunclub-logo.jpg"
                   alt="SunClub Logo"
                   fill
-                  className="object-contain p-2"
+                  className="object-cover"
                   style={{ imageRendering: '-webkit-optimize-contrast' }}
                   quality={100}
                 />
-                <div className="absolute inset-0 border-2 border-white/40 rounded-full animate-ping opacity-20"></div>
+                <div className="absolute inset-0 border-2 border-white/40 rounded-[2rem] animate-ping opacity-20"></div>
               </div>
             </motion.div>
 
