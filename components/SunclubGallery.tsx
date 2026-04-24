@@ -61,6 +61,7 @@ export function SunclubGallery() {
   const [showPhotoActions, setShowPhotoActions] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const observerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,6 +117,24 @@ export function SunclubGallery() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedPhotoIndex, isStoryMode, photos.length]);
+
+  // Infinite Scroll Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading && filteredPhotos.length > displayedPhotos.length) {
+          setDisplayLimit(prev => prev + 12);
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [loading, filteredPhotos.length, displayedPhotos.length]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -358,15 +377,10 @@ export function SunclubGallery() {
         )}
       </div>
 
-      {/* Show More Button */}
+      {/* Infinite Scroll Sentinel */}
       {!loading && filteredPhotos.length > displayedPhotos.length && (
-        <div className="mt-12 flex justify-center">
-          <button
-            onClick={() => setDisplayLimit(prev => prev + 20)}
-            className="px-8 py-3 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:bg-zinc-800 hover:border-zinc-700 rounded-2xl font-bold transition-all shadow-xl"
-          >
-            Xem thêm {filteredPhotos.length - displayedPhotos.length} ảnh
-          </button>
+        <div ref={observerRef} className="h-20 flex items-center justify-center mt-8">
+          <Loader2 className="animate-spin text-amber-500/50" size={24} />
         </div>
       )}
 
