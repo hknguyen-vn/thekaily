@@ -207,15 +207,25 @@ export function SunclubGallery() {
     }
   };
 
+  const isCategoryMatch = (photoCats: string[] | undefined, targetCat: string) => {
+    if (!photoCats || !Array.isArray(photoCats)) return false;
+    return photoCats.some(cat => {
+      if (cat === targetCat) return true;
+      // Support legacy "Khởi đầu" naming
+      if (targetCat.startsWith('Bước khởi đầu') && cat.startsWith('Bước khởi đầu')) return true;
+      return false;
+    });
+  };
+
   const filteredPhotos = photos.filter(p =>
-    filterCategory === 'All' || p.categories?.includes(filterCategory)
+    filterCategory === 'All' || isCategoryMatch(p.categories, filterCategory)
   );
 
   const displayedPhotos = filteredPhotos.slice(0, displayLimit);
 
   const getCount = (val: string) => {
     if (val === 'All') return photos.length;
-    return photos.filter(p => p.categories?.includes(val)).length;
+    return photos.filter(p => isCategoryMatch(p.categories, val)).length;
   };
 
   return (
