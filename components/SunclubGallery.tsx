@@ -505,13 +505,13 @@ export function SunclubGallery() {
               </div>
 
               <div className="relative w-[90vw] md:w-[80vw] max-w-5xl h-[45vh] md:h-[60vh] border border-amber-900/40 shadow-[0_0_40px_rgba(0,0,0,0.5)] z-0 bg-black overflow-hidden">
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                   <motion.div
                     key={photos[storyIndex].id}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    initial={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, scale: 0.95, filter: 'blur(5px)' }}
+                    transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
                     className="absolute inset-0"
                   >
                     <Image
