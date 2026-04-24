@@ -247,7 +247,7 @@ export function SunclubGallery() {
             <h1 className="text-4xl md:text-5xl font-headline font-bold text-white tracking-tight">
               SunClub <span className="text-amber-500 italic">Gallery</span>
             </h1>
-            <p className="text-zinc-500 mt-1 font-medium tracking-wide">Lưu trữ những khoảnh khắc vàng rực rỡ</p>
+            <p className="text-zinc-500 mt-1 font-medium tracking-wide">Lưu trữ những kỷ niệm của SunClub</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
