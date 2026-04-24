@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { ImagePlus, Camera, Trash2, Loader2, X, Filter, ChevronLeft, ChevronRight, Play, Pause, Volume2, Trophy, Image as ImageIcon, MoreHorizontal, Edit2 } from 'lucide-react';
+import { ImagePlus, Camera, Trash2, Loader2, X, Filter, ChevronLeft, ChevronRight, Play, Pause, Volume2, Trophy, Image as ImageIcon, MoreHorizontal, Edit2, Pin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getOptimizedCloudinaryUrl } from '@/lib/cloudinary';
@@ -17,6 +17,7 @@ interface Photo {
   date_taken?: string;
   authorUid?: string;
   authorName?: string;
+  isPinned?: boolean;
 }
 
 const SUNCLUB_SECTIONS = [
@@ -242,6 +243,40 @@ export function SunclubGallery() {
     }
   };
 
+  const handlePinToggle = async (photoId: string, currentPinnedStatus: boolean) => {
+    try {
+      const photoToUpdate = photos.find(p => p.id === photoId);
+      if (!photoToUpdate) return;
+
+      const newPinnedStatus = !currentPinnedStatus;
+      
+      const response = await fetch(`/api/sunclub-photos/${encodeURIComponent(photoId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          categories: photoToUpdate.categories || [], 
+          caption: photoToUpdate.caption || '',
+          isPinned: newPinnedStatus
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update pin status');
+
+      setPhotos(prev => {
+        const updated = prev.map(p => p.id === photoId ? { ...p, isPinned: newPinnedStatus } : p);
+        return updated.sort((a, b) => {
+          if (a.isPinned && !b.isPinned) return -1;
+          if (!a.isPinned && b.isPinned) return 1;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+      });
+      
+    } catch (error) {
+      console.error('Pin failed:', error);
+      alert('Không thể thay đổi trạng thái ghim. Vui lòng thử lại.');
+    }
+  };
+
   const getCount = (val: string) => {
     if (val === 'All') return photos.length;
     return photos.filter(p => isCategoryMatch(p.categories, val)).length;
@@ -270,30 +305,65 @@ export function SunclubGallery() {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="flex items-center gap-1.5 px-4 py-2 bg-amber-500 text-zinc-950 hover:bg-amber-400 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
-          >
-            {uploading ? <Loader2 size={18} className="animate-spin" /> : <ImagePlus size={18} />}
-            Tải ảnh lên
-          </button>
-          <button
-            onClick={() => { if (photos.length > 0) { setStoryIndex(0); setStoryProgress(0); setIsStoryPaused(false); setIsStoryMode(true); } }}
-            disabled={photos.length === 0}
-            className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-zinc-200 text-black rounded-xl font-bold transition-all shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Play size={20} fill="currentColor" />
-            Phát Kỷ Niệm
-          </button>
-
-          <button
-            onClick={() => setIsAwardMode(true)}
-            className="flex items-center gap-2 px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-amber-900/20"
-          >
-            <Trophy size={20} />
-            Lễ Trao Giải
-          </button>
+          {userProfile ? (
+            <>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="flex items-center gap-1.5 px-4 py-2 bg-amber-500 text-zinc-950 hover:bg-amber-400 rounded-xl text-sm font-bold transition-colors disabled:opacity-50"
+              >
+                {uploading ? <Loader2 size={18} className="animate-spin" /> : <ImagePlus size={18} />}
+                Tải ảnh lên
+              </button>
+              <button
+                onClick={() => { if (photos.length > 0) { setStoryIndex(0); setStoryProgress(0); setIsStoryPaused(false); setIsStoryMode(true); } }}
+                disabled={photos.length === 0}
+                className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-zinc-200 text-black rounded-xl font-bold transition-all shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Play size={20} fill="currentColor" />
+                Phát Kỷ Niệm
+              </button>
+              <button
+                onClick={() => setIsAwardMode(true)}
+                className="flex items-center gap-2 px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-amber-900/20"
+              >
+                <Trophy size={20} />
+                Lễ Trao Giải
+              </button>
+              <div className="flex items-center gap-2 pl-2 border-l border-zinc-700">
+                <img
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${userProfile.username}`}
+                  alt={userProfile.displayName}
+                  className="w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700"
+                />
+                <span className="text-zinc-400 text-sm font-medium hidden md:block">{userProfile.displayName}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => { if (photos.length > 0) { setStoryIndex(0); setStoryProgress(0); setIsStoryPaused(false); setIsStoryMode(true); } }}
+                disabled={photos.length === 0}
+                className="flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-zinc-200 text-black rounded-xl font-bold transition-all shadow-lg shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Play size={20} fill="currentColor" />
+                Phát Kỷ Niệm
+              </button>
+              <button
+                onClick={() => setIsAwardMode(true)}
+                className="flex items-center gap-2 px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-amber-900/20"
+              >
+                <Trophy size={20} />
+                Lễ Trao Giải
+              </button>
+              <a
+                href="/login"
+                className="flex items-center gap-2 px-5 py-2.5 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-500 rounded-xl text-sm font-bold transition-all"
+              >
+                Đăng nhập
+              </a>
+            </>
+          )}
         </div>
       </div>
 
@@ -363,6 +433,11 @@ export function SunclubGallery() {
                   unoptimized={!photo.url.includes('res.cloudinary.com')}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-zinc-950/0 to-zinc-950/0 opacity-0 group-hover:opacity-100 transition-opacity z-0" />
+                {photo.isPinned && (
+                  <div className="absolute top-3 right-3 bg-amber-500 text-zinc-950 p-1.5 rounded-full shadow-lg z-10">
+                    <Pin size={14} className="fill-zinc-950" />
+                  </div>
+                )}
               </div>
             ))}
             <button
@@ -711,14 +786,57 @@ export function SunclubGallery() {
             className="fixed inset-0 z-[100] bg-zinc-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-8"
             onClick={() => setSelectedPhotoIndex(null)}
           >
-            <motion.button
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              onClick={() => setSelectedPhotoIndex(null)}
-              className="absolute top-6 right-6 md:top-10 md:right-10 text-zinc-300 hover:text-white p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-all z-[70] border border-white/5"
-            >
-              <X size={24} />
-            </motion.button>
+            <div className="absolute top-6 right-6 md:top-10 md:right-10 flex items-center gap-4 z-[70]">
+              <div className="relative">
+                  <motion.button
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    onClick={(e) => { e.stopPropagation(); setShowPhotoActions(!showPhotoActions); }}
+                    className="text-zinc-300 hover:text-white p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-all border border-white/5"
+                    title="Tùy chọn"
+                  >
+                    <MoreHorizontal size={24} />
+                  </motion.button>
+                  <AnimatePresence>
+                    {showPhotoActions && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                        className="absolute top-full right-0 mt-3 w-44 bg-zinc-800 border border-zinc-700 rounded-2xl shadow-2xl overflow-hidden z-[80]"
+                      >
+                        <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowPhotoActions(false);
+                              handlePinToggle(photos[selectedPhotoIndex].id, !!photos[selectedPhotoIndex].isPinned);
+                            }}
+                            className="w-full flex items-center gap-3 px-5 py-4 text-amber-500 hover:bg-amber-500/10 transition-colors text-sm font-bold border-b border-zinc-700/50"
+                          >
+                            <Pin size={18} className={photos[selectedPhotoIndex].isPinned ? 'fill-amber-500' : ''} />
+                            {photos[selectedPhotoIndex].isPinned ? 'Bỏ ghim' : 'Ghim ảnh'}
+                          </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setShowPhotoActions(false); setShowDeleteConfirm(photos[selectedPhotoIndex].id); }}
+                          className="w-full flex items-center gap-3 px-5 py-4 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-sm font-bold"
+                        >
+                          <Trash2 size={18} />
+                          Xóa ảnh
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              <motion.button
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={() => setSelectedPhotoIndex(null)}
+                className="text-zinc-300 hover:text-white p-4 rounded-full bg-zinc-900/50 hover:bg-zinc-800 transition-all border border-white/5"
+                title="Đóng"
+              >
+                <X size={24} />
+              </motion.button>
+            </div>
 
             {photos.length > 1 && (
               <>
@@ -800,35 +918,6 @@ export function SunclubGallery() {
                         </span>
                       </div>
                     </div>
-                    {(userProfile?.role === 'admin' || userProfile?.uid === photos[selectedPhotoIndex].authorUid) && (
-                      <div className="relative">
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setShowPhotoActions(!showPhotoActions); }}
-                          className="p-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-white rounded-2xl transition-all"
-                        >
-                          <MoreHorizontal size={24} />
-                        </button>
-
-                        <AnimatePresence>
-                          {showPhotoActions && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                              animate={{ opacity: 1, scale: 1, y: 0 }}
-                              exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                              className="absolute bottom-full right-0 mb-3 w-40 bg-zinc-800 border border-zinc-700 rounded-2xl shadow-2xl overflow-hidden z-[80]"
-                            >
-                              <button
-                                onClick={(e) => { e.stopPropagation(); setShowPhotoActions(false); setShowDeleteConfirm(photos[selectedPhotoIndex].id); }}
-                                className="w-full flex items-center gap-3 px-5 py-4 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors text-sm font-bold"
-                              >
-                                <Trash2 size={18} />
-                                Xóa ảnh
-                              </button>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    )}
                   </div>
                 </motion.div>
               )}
