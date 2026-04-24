@@ -512,7 +512,19 @@ export function SunclubGallery() {
                     animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
                     exit={{ opacity: 0, scale: 0.95, filter: 'blur(5px)' }}
                     transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute inset-0"
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(e, info) => {
+                      if (info.offset.x > 100) {
+                        setStoryIndex((prev) => prev === 0 ? photos.length - 1 : prev - 1);
+                        setStoryProgress(0);
+                      } else if (info.offset.x < -100) {
+                        setStoryIndex((prev) => prev === photos.length - 1 ? 0 : prev + 1);
+                        setStoryProgress(0);
+                      }
+                    }}
+                    className="absolute inset-0 cursor-grab active:cursor-grabbing"
                   >
                     <Image
                       src={getOptimizedCloudinaryUrl(photos[storyIndex].url, 1600)}
@@ -572,9 +584,17 @@ export function SunclubGallery() {
               </div>
             </div>
 
-            {/* Hidden interactive areas for left/right navigation */}
-            <div className="absolute inset-y-0 left-0 w-1/4 z-40 cursor-pointer" onClick={(e) => { e.stopPropagation(); setStoryIndex((prev) => prev === 0 ? photos.length - 1 : prev - 1); setStoryProgress(0); }} />
-            <div className="absolute inset-y-0 right-0 w-1/4 z-40 cursor-pointer" onClick={(e) => { e.stopPropagation(); setStoryIndex((prev) => prev === photos.length - 1 ? 0 : prev + 1); setStoryProgress(0); }} />
+            {/* Desktop/Mobile Navigation Arrows */}
+            <div className="absolute inset-y-0 left-0 w-1/3 z-40 flex items-center justify-start pl-4 md:pl-10 group cursor-pointer" onClick={(e) => { e.stopPropagation(); setStoryIndex((prev) => prev === 0 ? photos.length - 1 : prev - 1); setStoryProgress(0); }}>
+              <button className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 group-hover:text-white group-hover:bg-black/40 transition-all active:scale-90">
+                <ChevronLeft size={24} className="md:w-8 md:h-8" />
+              </button>
+            </div>
+            <div className="absolute inset-y-0 right-0 w-1/3 z-40 flex items-center justify-end pr-4 md:pr-10 group cursor-pointer" onClick={(e) => { e.stopPropagation(); setStoryIndex((prev) => prev === photos.length - 1 ? 0 : prev + 1); setStoryProgress(0); }}>
+              <button className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-black/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 group-hover:text-white group-hover:bg-black/40 transition-all active:scale-90">
+                <ChevronRight size={24} className="md:w-8 md:h-8" />
+              </button>
+            </div>
 
           </motion.div>
         )}
@@ -726,7 +746,19 @@ export function SunclubGallery() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="relative w-full h-[65vh] md:h-[75vh] z-[50] flex items-center justify-center touch-none"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, info) => {
+                if (info.offset.x > 100) {
+                  // Swipe Right -> Previous
+                  setSelectedPhotoIndex((prev) => prev !== null ? (prev === 0 ? photos.length - 1 : prev - 1) : null);
+                } else if (info.offset.x < -100) {
+                  // Swipe Left -> Next
+                  setSelectedPhotoIndex((prev) => prev !== null ? (prev === photos.length - 1 ? 0 : prev + 1) : null);
+                }
+              }}
+              className="relative w-full h-[65vh] md:h-[75vh] z-[50] flex items-center justify-center touch-none cursor-grab active:cursor-grabbing"
               onClick={e => e.stopPropagation()}
             >
               <Image
