@@ -222,7 +222,7 @@ export function SunclubGallery() {
     <div className="bg-zinc-950 rounded-3xl p-6 border border-zinc-800 shadow-xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-5">
-          <div className="relative w-16 h-16 md:w-20 md:h-20 overflow-hidden rounded-4xl border-2 border-zinc-800 shadow-2xl rotate-3 bg-zinc-900">
+          <div className="relative w-16 h-16 md:w-40 md:h-40 overflow-hidden rounded-4xl border-2 border-zinc-800 shadow-2xl rotate-3 bg-zinc-900">
             <Image
               src="/sunclub-logo.jpg"
               alt="SunClub Logo"
